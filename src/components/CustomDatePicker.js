@@ -14,7 +14,7 @@ export default function CustomDatePicker({date, ...rest}) {
     }, [])
 
     const m = moment();
-    const mEnd = moment().add(7, "days");
+    const mEnd = moment().subtract(7, "days");
     return (
         <DatePicker
                 style={{
@@ -31,8 +31,8 @@ export default function CustomDatePicker({date, ...rest}) {
                 mode="date"
                 placeholder="Service Date"
                 format="YYYY-MM-DD"
-                minDate={m}
-                maxDate={mEnd}
+                minDate={mEnd}
+                maxDate={m}
                 confirmBtnText="Confirm"
                 cancelBtnText="Cancel"
                 customStyles={{

@@ -72,8 +72,8 @@ export default function ServiceScreen() {
     const resetComponentStates = () => {
         setDate(moment().format())
         setRegNumber('')
-        setOdometer(5000)
-        setOdometerMin(5000)
+        setOdometer(0)
+        setOdometerMin(0)
         setSelectedServiceTypes([])
         setDescription('')
     }
@@ -88,7 +88,8 @@ export default function ServiceScreen() {
                 serviceDate: date,
                 mechanic: user.uid,
                 entryDate: moment().format("YYYY-MM-DD"),
-                description
+                description,
+                approved: false
             });
             successAlert("Your service record was added.", error);
         } else {

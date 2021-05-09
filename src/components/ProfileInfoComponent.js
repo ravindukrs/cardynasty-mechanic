@@ -23,8 +23,8 @@ function ProfileInfoComponent(props) {
             <Icon name="user" style={styles.icon}></Icon>
           </View>
           <View style={styles.containerColumn}>
-            <Text style={styles.companyNameText}>Ravindu Motors (Pvt) Ltd</Text>
-            <Text style={styles.addressText}>140E, Kalutara South</Text>
+            <Text style={styles.companyNameText}>{props.details.shop_name}</Text>
+            <Text style={styles.addressText}>{props.details.shop_location.formatted_address}</Text>
             <Text style={styles.contactText}>
               071 7503812 | ravindupf@gmail.com
             </Text>

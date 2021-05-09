@@ -103,7 +103,9 @@ export default function MyProfileScreen() {
         vehicleCategories ? (
             <View style={styles.container}>
                 <ScrollView keyboardShouldPersistTaps="always">
-                    <ProfileInfoComponent style={styles.profileInfoComponent} />
+                    { currentProfileSettings ? 
+                    <ProfileInfoComponent style={styles.profileInfoComponent} details={currentProfileSettings}/>
+                    : null }
                     <View style={{ alignItems: "center" }} keyboardShouldPersistTaps="always">
                         <Text style={{ textAlign: 'left', fontSize: 18 }}>Shop Name</Text>
                         <Input
