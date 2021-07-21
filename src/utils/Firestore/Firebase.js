@@ -71,7 +71,25 @@ const Firebase = {
            console.log("Error querying document: ", error);
            return null
         });
-    }
+    },
+    getRegisteredVehicle: (regNumber) => {
+        console.log("In FB Function: ", regNumber)
+        return firestore().collection('vehicles').doc(regNumber).get().then((doc) => {
+            console.log("Outside IF")
+            if (doc.exists) {
+                console.log("Inside IF")
+                console.log("Doc Exists ", doc.data())
+                return doc.data()
+            } else {
+                // doc.data() will be undefined in this case
+                console.log("No such document!");
+                return null
+            }
+        }).catch((error) => {
+            console.log("Error getting document:", error);
+        })
+    },
+    
 }
 
 export default Firebase;

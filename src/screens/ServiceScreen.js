@@ -45,13 +45,15 @@ export default function ServiceScreen() {
         setServiceTypes(serviceTypeArray)
     }
 
-    const validateData = () => {
+    const validateData = async () => {
         var error = null
-
-        if (regNumber.length != 6) {
+        var info =  await Firebase.getRegisteredVehicle(regNumber)
+        if (regNumber.length < 6 || regNumber.length > 7) {
             error = "Registration Number is Invalid"
         } else if (selectedServiceTypes.length < 1) {
             error = "Services not selected"
+        } else if (info == null) {
+            error = "Vehicle Registration is Invalid or the vehicle is not registered with CarDynasty"
         }
         return error
     }
@@ -79,7 +81,7 @@ export default function ServiceScreen() {
     }
 
     const onServiceSubmit = async () => {
-        var error = validateData();
+        var error = await validateData();
         if (!error) {
             await Firebase.addNewService({
                 regNumber,
@@ -100,8 +102,8 @@ export default function ServiceScreen() {
 
     useEffect(() => {
         (async () => {
-            console.log("Invalid Number: ", regNumber)
-            if (regNumber.length == 6) {
+            //console.log("Invalid Number: ", regNumber)
+            if (regNumber.length >= 6) {
                 console.log("Reg Number: ", regNumber)
                 try {
                     let lastService = await Firebase.getLastService(regNumber);

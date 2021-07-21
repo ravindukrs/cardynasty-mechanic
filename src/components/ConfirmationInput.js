@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
   },
 });
  
-const CELL_COUNT = 6;
+const CELL_COUNT = 7;
  
 export default function ConfirmationInput ({value, setValue, ...rest}){
   const ref = useBlurOnFulfill({value, cellCount: CELL_COUNT});
