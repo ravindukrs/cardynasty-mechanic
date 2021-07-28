@@ -80,9 +80,32 @@ export default function ServiceScreen() {
         setDescription('')
     }
 
+    const findDataValue = () => {
+        const descriptionLength = description.length
+        const serviceTypes = selectedServiceTypes.length
+        const dataValue = descriptionLength*serviceTypes
+        console.log("Data Value", dataValue)
+        return dataValue
+    }
+
+    const creditDataValue = async (value) => {
+        await Firebase.addCreditToMechanic(user.uid, value)
+        var payload = {
+            mechanic: user.uid,
+            value: value,
+            regNumber: regNumber,
+            type: "Mechanic Pay",
+            stamp: moment().format(),
+            services: selectedServiceTypes
+        }
+        await Firebase.addTransactionEntry(payload)
+    }
+
     const onServiceSubmit = async () => {
         var error = await validateData();
         if (!error) {
+            var dataValue = await findDataValue()
+            await creditDataValue(dataValue)
             await Firebase.addNewService({
                 regNumber,
                 odometer,
@@ -93,7 +116,7 @@ export default function ServiceScreen() {
                 description,
                 approved: false
             });
-            successAlert("Your service record was added.", error);
+            successAlert(`Your service record was added. You are credited Rs.${dataValue} /=`, error);
         } else {
             successAlert(null, error)
         }

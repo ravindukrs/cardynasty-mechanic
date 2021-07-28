@@ -21,17 +21,27 @@ import BalanceComponent from '../components/BalanceComponent';
 
 
 
-export default function WorkPlaceScreen() {
+export default function WorkPlaceScreen({navigation}) {
 
     const { user, logout } = useContext(AuthContext);
+    const [currentProfileSettings, setCurrentProfileSettings] = useState(null)
 
+    useEffect(() => {
+        (async () => {
+          try {
+            await Firebase.getProfileSettings(user.uid, setCurrentProfileSettings);
+          } catch (error) {
+            console.log(error);
+          }
+        })()
+      }, [])
 
     return (
         <View style={styles.container}>
             <ScrollView contentContainerStyle={{ justifyContent: "center", alignItems: "center" }}>
-                <BalanceComponent/>
-                <Text style={{ textAlign: 'center', fontSize: 18 }}>Your Balances</Text>
-                <ProgressChartComponent/>
+                <BalanceComponent profile={currentProfileSettings ? currentProfileSettings : null } navigation={navigation}/>
+                {/* <Text style={{ textAlign: 'center', fontSize: 18 }}>Your Balances</Text>
+                <ProgressChartComponent/> */}
                 <Text style={{ textAlign: 'center', fontSize: 18 }}>Your Week's Earnings</Text>
                 <LineChartComponent />
                 <Text style={{ textAlign: 'center', fontSize: 18 }}>Service Breakdown</Text>

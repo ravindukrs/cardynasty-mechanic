@@ -1,5 +1,5 @@
 import firestore from '@react-native-firebase/firestore';
-import moment from 'moment'; 
+import moment from 'moment';
 
 const Firebase = {
 
@@ -51,7 +51,6 @@ const Firebase = {
 
     //Add or Modify Shop Details
     updateShopDetails: (payload) => {
-        console.log("Inside FB Method")
         return firestore().collection('shops').doc(`${payload.uid}`).set(payload, { merge: true }).then(() => {
             console.log("Document successfully updated!");
         }).catch((error) => {
@@ -62,14 +61,14 @@ const Firebase = {
     //Get Last Service on a Vehicle
     getLastService: (regNumber) => {
         return firestore().collection('vehicles').doc(`${regNumber}`).collection('services').orderBy("serviceDate", "desc").get().then((querySnapshot) => {
-           if (querySnapshot.docs[0].data()){
-               return querySnapshot.docs[0].data()
-           } else {
-               return null
-           }
+            if (querySnapshot.docs[0].data()) {
+                return querySnapshot.docs[0].data()
+            } else {
+                return null
+            }
         }).catch((error) => {
-           console.log("Error querying document: ", error);
-           return null
+            console.log("Error querying document: ", error);
+            return null
         });
     },
     getRegisteredVehicle: (regNumber) => {
@@ -89,7 +88,85 @@ const Firebase = {
             console.log("Error getting document:", error);
         })
     },
-    
+
+    getTransactionsOfMechanic: (uid, setTransactions) => {
+        return firestore().collection('mechanic-transactions').where('mechanic', '==', uid).orderBy("stamp", "desc").get().then((querySnapshot) => {
+            if (querySnapshot.docs[0].data()) {
+                let transactions = []
+                querySnapshot.docs.forEach((doc) => {
+                    transactions.push(doc.data())
+                })
+                setTransactions(transactions)
+            } else {
+                return null
+            }
+        }).catch((error) => {
+            console.log("Error querying document: ", error);
+            return null
+        });
+    },
+
+    //Credit Functions
+    addCreditToMechanic: (uid, value) => {
+        return firestore().collection('shops').doc(uid).get().then((doc) => {
+            if (doc.data().balance) {
+                var total = value + doc.data().balance
+                return firestore().collection('shops').doc(`${uid}`).update({balance: total})
+            }else{
+                return firestore().collection('shops').doc(`${uid}`).update({balance: value})
+            }
+        }).catch((error) => {
+            console.log(error)
+        });
+    },
+
+    addTransactionEntry: (payload) => {
+        return firestore().collection('mechanic-transactions').doc(`${payload.stamp}-${payload.mechanic}`).set(payload)
+    },
+
+    updateBankDetails: (uid, payload) => {
+        return firestore().collection('shops').doc(uid).get().then((doc) => {
+            if (doc.data()) {
+                console.log("Updating Bank Details")
+                return firestore().collection('shops').doc(`${uid}`).update({bankDetails: payload})
+            }
+        }).catch((error) => {
+            console.log(error)
+        });
+    },
+
+    performWithdrawal: (uid, withdrawalAmount) => {
+        return firestore().collection('shops').doc(uid).get().then((doc) => {
+            if (doc.data().balance) {
+                var total = doc.data().balance - withdrawalAmount
+                return firestore().collection('shops').doc(`${uid}`).update({balance: total})
+            }else{
+                return 0
+            }
+        }).catch((error) => {
+            console.log(error)
+        });
+    },
+    //Get all services of a mechanic
+    getServicesOfMechanic: (uid, setServices) => {
+        return firestore().collectionGroup('services').get().then((querySnapshot) => {
+            if (querySnapshot.docs[0].data()) {
+                let serviceList = []
+                querySnapshot.docs.forEach((doc) => {
+                    if(doc.data().mechanic == uid && doc.data().approved == "accepted"){
+                        serviceList.push(doc.data().services)
+                    }
+                })
+               setServices(serviceList)
+            } else {
+                return null
+            }
+        }).catch((error) => {
+            console.log("Error querying document: ", error);
+            return null
+        });
+    },
+
 }
 
 export default Firebase;
