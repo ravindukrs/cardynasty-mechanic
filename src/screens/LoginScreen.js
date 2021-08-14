@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, KeyboardAvoidingView, Keyboar
 import FormButton from '../components/FormButton';
 import { AuthContext } from '../navigation/AuthProvider';
 import { windowHeight, windowWidth } from '../utils/Dimensions';
-
+import Firebase from '../utils/Firestore/Firebase';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Input } from 'react-native-elements';
 
@@ -14,6 +14,7 @@ import * as Yup from 'yup';
 
 //Import Formik
 import { Formik } from 'formik';
+import { Alert } from 'react-native';
 
 const validationSchema = Yup.object().shape({
     email: Yup.string()
@@ -27,10 +28,44 @@ const validationSchema = Yup.object().shape({
 })
 
 export default function LoginScreen({ navigation }) {
-    const { login } = useContext(AuthContext);
+    const { login, reset } = useContext(AuthContext);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPass, setShowPass] = useState(false);
+
+    const performLogin = async (email, password) => {
+        let userData = await Firebase.getUserByEmail(email)
+        if(userData && userData.userType == "Mechanic"){
+            console.log("Performing Login")
+            const response = await login(email, password)
+            if(!response.user){
+                Alert.alert("Invalid Login", `Sorry, your entered invalid credentials.`)
+            }
+        }else{
+            console.log("Didn't Login")
+            Alert.alert("Invalid Role", "The email is not associated with Mechanic privilages.")
+        }
+        
+    }
+
+    const performResetPassword = async (email) => {
+        let emailregex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        let emailValidity =  await emailregex.test(email);
+        if(!emailValidity){
+            Alert.alert("Invalid Email","The email address entered is invalid")
+            return;
+        }
+        let userData = await Firebase.getUserByEmail(email)
+        if(userData && userData.userType == "Mechanic"){
+            console.log("Performing Reset")
+            const response = await reset(email)
+            console.log("Reset Response ",response)
+            Alert.alert("Recovery link sent", `Password reset information was sent to ${email}`)
+        }else{
+            Alert.alert("Invalid Role", "The email is not associated with Mechanic privilages.")
+        }
+        
+    }
 
     return (
 
@@ -100,7 +135,7 @@ export default function LoginScreen({ navigation }) {
                                     { isValid &&
                                         <FormButton
                                             buttonTitle='Login'
-                                            onPress={() => login(values.email, values.password)}
+                                            onPress={() => performLogin(values.email, values.password)}
                                         />
                                     }
 
@@ -109,6 +144,14 @@ export default function LoginScreen({ navigation }) {
                                         onPress={() => navigation.navigate('Signup')}
                                     >
                                         <Text style={styles.signUpText}>New user? Join here</Text>
+                                    </TouchableOpacity>
+
+
+                                    <TouchableOpacity
+                                        style={styles.navButton}
+                                        onPress={() => performResetPassword(values.email)}
+                                    >
+                                        <Text style={styles.signUpText}>Forgot Password. Reset Here</Text>
                                     </TouchableOpacity>
                                 </View>
                             )}

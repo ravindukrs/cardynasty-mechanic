@@ -31,24 +31,24 @@ const chartConfig = {
     bgColor: "#e26a00"
 };
 
-const LineChartComponent = () => {
+const LineChartComponent = (props) => {
 
     const { user, logout } = useContext(AuthContext);
-    const [currentProfile, setCurrentProfileSettings] = useState()
+    // const [currentProfile, setCurrentProfileSettings] = useState()
     const [transactions, setTransactions] = useState()
     const [mechanicPay, setMechanicPay] = useState()
 
 
 
-    useEffect(() => {
-        (async () => {
-            try {
-                await Firebase.getProfileSettings(user.uid, setCurrentProfileSettings);
-            } catch (error) {
-                console.log(error);
-            }
-        })()
-    }, [])
+    // useEffect(() => {
+    //     (async () => {
+    //         try {
+    //             await Firebase.getProfileSettings(user.uid, setCurrentProfileSettings);
+    //         } catch (error) {
+    //             console.log(error);
+    //         }
+    //     })()
+    // }, [])
 
     useEffect(() => {
         (async () => {
@@ -58,7 +58,7 @@ const LineChartComponent = () => {
                 console.log(error);
             }
         })()
-    })
+    }, [props.currentProfile])
 
 
     useEffect(() => {
@@ -114,9 +114,9 @@ const LineChartComponent = () => {
     )
 }
 
-const PieChartComponent = () => {
+const PieChartComponent = (props) => {
     const { user, logout } = useContext(AuthContext);
-    const [currentProfile, setCurrentProfileSettings] = useState()
+    // const [currentProfile, setCurrentProfileSettings] = useState()
     const [serviceTypes, setServiceTypes] = useState()
     const [services, setServices] = useState()
     const [serviceDataset, setServiceDataset] = useState()
@@ -210,7 +210,7 @@ const PieChartComponent = () => {
     )
 }
 
-const ProgressChartComponent = () => {
+const ProgressChartComponent = (props) => {
     return (
         <ProgressChart
             data={{

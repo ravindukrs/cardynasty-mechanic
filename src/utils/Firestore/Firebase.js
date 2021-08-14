@@ -10,7 +10,47 @@ const Firebase = {
     addNewService: (serviceData) => {
         return firestore().collection('vehicles').doc(`${serviceData.regNumber}`).collection('services').doc(`${moment().format()}`).set(serviceData)
     },
-
+    getUserByEmail: (email) => {
+        return firestore().collection('users').where("email", "==", email).get().then((doc) => {
+            if (doc.empty) {
+                // return doc.data()
+                console.log("So Such User")
+                return null
+            } else {
+                // doc.data() will be undefined in this case
+                console.log("Found user, ",doc.docs[0].data());
+                return doc.docs[0].data()
+            }
+        }).catch((error) => {
+            console.log("Error getting document:", error);
+        })
+    },
+    checkNIC: (nic) => {
+        return firestore().collection('users').where("nic", "==", nic).get().then((doc) => {
+            if (doc.empty) {
+                // return doc.data()
+                return true
+            } else {
+                // doc.data() will be undefined in this case
+                return false
+            }
+        }).catch((error) => {
+            console.log("Error getting document:", error);
+        })
+    },
+    checkMobile: (mobile) => {
+        return firestore().collection('users').where("mobile", "==", mobile).get().then((doc) => {
+            if (doc.empty) {
+                // return doc.data()
+                return true
+            } else {
+                // doc.data() will be undefined in this case
+                return false
+            }
+        }).catch((error) => {
+            console.log("Error getting document:", error);
+        })
+    },
     //Get Constants
     getServiceTypes: () => {
         return firestore().collection('constants').doc('service-types').get().then((doc) => {
@@ -42,7 +82,6 @@ const Firebase = {
         console.log("Inside Snapshot XXX")
         return firestore().collection('shops').doc(uid).onSnapshot((doc) => {
             console.log("Trying to Grab")
-            console.log(doc.data().shop_name);
             setCurrentProfileSettings(doc.data())
         }).catch((error) => {
             console.log(error)
@@ -90,9 +129,11 @@ const Firebase = {
     },
 
     getTransactionsOfMechanic: (uid, setTransactions) => {
+        console.log("Start Transactions in Firebase Function")
         return firestore().collection('mechanic-transactions').where('mechanic', '==', uid).orderBy("stamp", "desc").get().then((querySnapshot) => {
+            let transactions = []
             if (querySnapshot.docs[0].data()) {
-                let transactions = []
+                console.log("Got a Query Doc")
                 querySnapshot.docs.forEach((doc) => {
                     transactions.push(doc.data())
                 })

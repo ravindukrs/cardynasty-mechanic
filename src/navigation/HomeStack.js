@@ -28,6 +28,19 @@ function Home() {
             }}
         >
             <Tab.Screen
+                name="My Workplace"
+                component={BankStack}
+                options={{
+                    tabBarIcon: ({ focused, color }) => (
+                        <Icon
+                            name="location-city"
+                            type="material"
+                            size={28}
+                            color={color} />
+                    ),
+                }}
+            />
+            {/* <Tab.Screen
                 name="Dashboard"
                 component={HomeScreen}
                 options={{
@@ -40,7 +53,7 @@ function Home() {
                         />
                     ),
                 }}
-            />
+            /> */}
             <Tab.Screen
                 name="Add Service"
                 component={ServiceScreen}
@@ -67,19 +80,6 @@ function Home() {
                     ),
                 }}
             /> */}
-            <Tab.Screen
-                name="My Workplace"
-                component={BankStack}
-                options={{
-                    tabBarIcon: ({ focused, color }) => (
-                        <Icon
-                            name="location-city"
-                            type="material"
-                            size={28}
-                            color={color} />
-                    ),
-                }}
-            />
             <Tab.Screen
                 name="Profile"
                 component={MyProfileScreen}
@@ -119,7 +119,7 @@ export function BankStack() {
                     { ...TransitionPresets.SlideFromRightIOS, }
                 }
             />
-             <Stack.Screen name="Transactions" component={TransactionScreen}
+            <Stack.Screen name="Transactions" component={TransactionScreen}
                 options={
                     { ...TransitionPresets.SlideFromRightIOS, }
                 }

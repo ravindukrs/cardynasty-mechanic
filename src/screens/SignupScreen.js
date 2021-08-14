@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import {     
+import {
     StyleSheet,
     Text,
     View,
@@ -11,7 +11,8 @@ import {
     TouchableWithoutFeedback,
     Keyboard,
     KeyboardAvoidingView,
-    ScrollView } from 'react-native';
+    ScrollView
+} from 'react-native';
 import FormButton from '../components/FormButton';
 import FormInput from '../components/FormInput';
 import { AuthContext } from '../navigation/AuthProvider';
@@ -29,6 +30,7 @@ import * as Yup from 'yup';
 
 //Import Formik
 import { Formik } from 'formik';
+import { Alert } from 'react-native';
 
 const validationSchema = Yup.object().shape({
     fName: Yup.string()
@@ -67,15 +69,31 @@ export default function SignupScreen() {
     const handleSubmit = async (values, actions) => {
 
         const { fName, lName, email, mobile, nic, password } = values;
+        //Check if NIC or Mobile exist
+        let newNic = await Firebase.checkNIC(nic)
+        let newMobile = await Firebase.checkMobile(mobile)
+
+        if(!newNic){
+            Alert.alert("NIC in Use", "This NIC is already associated with an account")
+            return;
+        }
+        if(!newMobile){
+            Alert.alert("Mobile Number in Use", "This Mobile Number is already associated with an account")
+            return;
+        }
 
         try {
-            const response = await register(email,password);
+            const response = await register(email, password);
 
-            if (response.user.uid){
-                const {uid} = response.user;
-                await Firebase.createNewUser({uid, fName, lName, email, nic, mobile });
+            if (response.user.uid) {
+                const { uid } = response.user;
+                await Firebase.createNewUser({ uid, fName, lName, email, nic, mobile, userType: "Mechanic" });
+                console.log(signUpResponse)
+                if(signUpResponse.includes("Error")){
+                    Alert.alert("Error Occured", signUpResponse.replace(/\s*\(.*?\)\s*/g, ''))
+                }
             }
-        }catch(error){
+        } catch (error) {
             console.log("No success")
             console.log(error.message)
         }
@@ -97,9 +115,9 @@ export default function SignupScreen() {
                                 password: '',
                                 retypePassword: '',
                             }}
-                            onSubmit={(values, actions) => { handleSubmit(values,actions)}}
+                            onSubmit={(values, actions) => { handleSubmit(values, actions) }}
                             validationSchema={validationSchema}
-                            validateOnMount = {true}
+                            validateOnMount={true}
                         >
                             {({ handleChange, handleSubmit, values, errors, setFieldTouched, touched, isValid }) => (
                                 <View>
@@ -226,12 +244,12 @@ export default function SignupScreen() {
                                     <View style={{ alignItems: "center" }}>
                                         <TouchableOpacity
                                             disabled={!isValid}
-                                            style={[styles.btnSignUpDisabled, isValid ? styles.btnSignUpEnabled :  styles.btnSignUpDisabled] }
+                                            style={[styles.btnSignUpDisabled, isValid ? styles.btnSignUpEnabled : styles.btnSignUpDisabled]}
                                             onPress={handleSubmit}
                                         >
                                             <Text style={styles.textLogin}>Sign Up</Text>
                                         </TouchableOpacity>
-                                        
+
                                         <View>
                                             {/* {
                                                 errorState!==undefined ? <View style={styles.serverErrorContainer}><Text style={styles.serverErrorText}>{errorState}</Text></View> : null
@@ -372,4 +390,4 @@ const styles = StyleSheet.create({
         marginTop: 25,
         justifyContent: "center"
     },
-  });
+});

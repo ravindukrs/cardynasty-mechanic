@@ -43,7 +43,7 @@ export default function WorkPlaceScreen({navigation}) {
                 {/* <Text style={{ textAlign: 'center', fontSize: 18 }}>Your Balances</Text>
                 <ProgressChartComponent/> */}
                 <Text style={{ textAlign: 'center', fontSize: 18 }}>Your Week's Earnings</Text>
-                <LineChartComponent />
+                <LineChartComponent currentProfileSettings={currentProfileSettings} setCurrentProfileSettings={setCurrentProfileSettings}/>
                 <Text style={{ textAlign: 'center', fontSize: 18 }}>Service Breakdown</Text>
                 <PieChartComponent />
             </ScrollView>

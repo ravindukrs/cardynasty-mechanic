@@ -14,8 +14,7 @@ import ProfileInfoComponent from '../components/ProfileInfoComponent'
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import GooglePlacesSearchComponent from '../components/GooglePlacesSearchComponent';
 import Spinner from 'react-native-loading-spinner-overlay';
-
-
+import { FloatingAction } from "react-native-floating-action";
 
 export default function MyProfileScreen() {
 
@@ -31,6 +30,18 @@ export default function MyProfileScreen() {
     const [currentProfileSettings, setCurrentProfileSettings] = useState(null)
 
     const [updateTimeStamp, setUpdateTimeStamp] = useState('')
+    const actions = [
+        {
+            text: "Sign Out",
+            icon: <Icon
+                name="arrow-right"
+                size={15}
+                color="white"
+            />,
+            name: "Sign Out",
+            position: 1
+        }
+    ];
 
     useEffect(() => {
         populateSelectionArrays();
@@ -38,13 +49,13 @@ export default function MyProfileScreen() {
 
     useEffect(() => {
         (async () => {
-          try {
-            await Firebase.getProfileSettings(user.uid, setCurrentProfileSettings);
-          } catch (error) {
-            console.log(error);
-          }
+            try {
+                await Firebase.getProfileSettings(user.uid, setCurrentProfileSettings);
+            } catch (error) {
+                console.log(error);
+            }
         })()
-      }, [updateTimeStamp])
+    }, [updateTimeStamp])
 
     useEffect(() => {
         // Reconstruct vehicle category array
@@ -86,14 +97,14 @@ export default function MyProfileScreen() {
             service_categories: selectedServiceTypes,
             vehicle_categories: selectedVehicleCategories
         } :
-        {
-            uid: user.uid,
-            shop_name: shopName,
-            service_categories: selectedServiceTypes,
-            vehicle_categories: selectedVehicleCategories
-        }
+            {
+                uid: user.uid,
+                shop_name: shopName,
+                service_categories: selectedServiceTypes,
+                vehicle_categories: selectedVehicleCategories
+            }
         await Firebase.updateShopDetails(payload)
-        console.log("Shop Location is: ",shopLocation)
+        console.log("Shop Location is: ", shopLocation)
         setUpdateTimeStamp(moment())
         console.log("Well, something happened")
     }
@@ -103,9 +114,9 @@ export default function MyProfileScreen() {
         vehicleCategories ? (
             <View style={styles.container}>
                 <ScrollView keyboardShouldPersistTaps="always">
-                    { currentProfileSettings ? 
-                    <ProfileInfoComponent style={styles.profileInfoComponent} details={currentProfileSettings}/>
-                    : null }
+                    {currentProfileSettings ?
+                        <ProfileInfoComponent style={styles.profileInfoComponent} details={currentProfileSettings} />
+                        : null}
                     <View style={{ alignItems: "center" }} keyboardShouldPersistTaps="always">
                         <Text style={{ textAlign: 'left', fontSize: 18 }}>Shop Name</Text>
                         <Input
@@ -135,9 +146,19 @@ export default function MyProfileScreen() {
                             }}
 
                         />
+
                     </View>
 
                 </ScrollView>
+                <FloatingAction
+                        actions={actions}
+                        color="purple"
+                        onPressItem={name => {
+                            console.log(`selected button: ${name}`);
+                            logout()
+                        }}
+                    />
+
             </View>
         ) :
             (

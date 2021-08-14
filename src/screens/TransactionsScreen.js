@@ -14,6 +14,7 @@ import { PieChartComponent } from '../components/ChartComponent'
 import { ProgressChartComponent } from '../components/ChartComponent'
 // import CircleSlider from "react-native-circle-slider";
 import Slider from "react-native-sliders";
+import Spinner from 'react-native-loading-spinner-overlay';
 
 
 import moment from 'moment';
@@ -29,8 +30,16 @@ export default function TransactionScreen({ navigation }) {
     const { user, logout } = useContext(AuthContext);
     const [currentProfile, setCurrentProfileSettings] = useState()
     const [transactions, setTransactions] = useState()
+    const [showSpinner, setShowSpinner] = useState(true)
 
 
+    useEffect(() => {
+        (async () => {
+            if(transactions){
+                setShowSpinner(false)
+            }
+        })()
+    }, [transactions])
 
     useEffect(() => {
         (async () => {
@@ -40,40 +49,51 @@ export default function TransactionScreen({ navigation }) {
                 console.log(error);
             }
         })()
-    }, [])
+    }, [user])
+
 
     useEffect(() => {
         (async () => {
             try {
+                console.log("Start Populating Transactions")
                 await Firebase.getTransactionsOfMechanic(user.uid, setTransactions);
+                console.log("Populated Transactions")
+                setShowSpinner(false)
             } catch (error) {
                 console.log(error);
             }
         })()
-    }, [])
+    }, [user])
 
     return (
         <View style={styles.container}>
-        <ScrollView>
-            <Text style={{ textAlign: 'center', fontSize: 18 }}>Previous Transactions</Text>
-            {transactions ? (
-                <View style={{ marginTop: 20 }}>
-                    {
-                        transactions.map((item, i) => (
-                            <ListItem key={i} bottomDivider>
-                                {/* <Icon name={item.icon} type={item.icontype} /> */}
-                                <ListItem.Content>
-                                    <ListItem.Title>Transaction Type : <Text style={{color:"green", fontWeight:"bold"}}>{item.type.replace("Mechanic ", "").replace("Pay", "Service Earning")}</Text></ListItem.Title>
-                                    <ListItem.Subtitle>Amount: <Text style={{fontWeight:"bold"}}>Rs.{item.value}</Text></ListItem.Subtitle>
-                                </ListItem.Content>
-                                <ListItem.Chevron />
-                            </ListItem>
-                        ))
-                    }
-                </View>) :
-                <Text>No Transactions Available</Text>
-            }
-            </ScrollView> 
+            <ScrollView>
+                <Text style={{ textAlign: 'center', fontSize: 18 }}>Previous Transactions</Text>
+                {showSpinner ?
+                    <Spinner
+                        visible={showSpinner}
+                        textContent={'Loading...'}
+                        textStyle={{ color: 'white' }}
+                    />
+                    : null}
+                {transactions ? (
+                    <View style={{ marginTop: 20 }}>
+                        {
+                            transactions.map((item, i) => (
+                                <ListItem key={i} bottomDivider>
+                                    {/* <Icon name={item.icon} type={item.icontype} /> */}
+                                    <ListItem.Content>
+                                        <ListItem.Title>Transaction Type : <Text style={{ color: "green", fontWeight: "bold" }}>{item.type.replace("Mechanic ", "").replace("Pay", "Service Earning")}</Text></ListItem.Title>
+                                        <ListItem.Subtitle>Amount: <Text style={{ fontWeight: "bold" }}>Rs.{item.value}</Text></ListItem.Subtitle>
+                                    </ListItem.Content>
+                                    <ListItem.Chevron />
+                                </ListItem>
+                            ))
+                        }
+                    </View>) :
+                    <Text>No Transactions Available</Text>
+                }
+            </ScrollView>
         </View>
     );
 }

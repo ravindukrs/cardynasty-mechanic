@@ -29,6 +29,7 @@
     "react-native-confirmation-code-field": "^6.5.1",
     "react-native-datepicker": "^1.7.2",
     "react-native-elements": "^3.1.0",
+    "react-native-floating-action": "^1.21.0",
     "react-native-gesture-handler": "^1.8.0",
     "react-native-google-places-autocomplete": "^2.2.0",
     "react-native-loading-spinner-overlay": "^2.0.0",

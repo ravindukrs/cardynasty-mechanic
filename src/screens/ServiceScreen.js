@@ -135,8 +135,15 @@ export default function ServiceScreen() {
                         setOdometerMin(lastService.odometer)
                         console.log("Odometer Set to : ", odometer)
                     } else {
-                        setOdometer(0)
-                        setOdometerMin(0)
+                        var info =  await Firebase.getRegisteredVehicle(regNumber)
+                        if(info && info.odometer){
+                            setOdometer(info.odometer)
+                            setOdometerMin(info.odometer)
+                        }else{
+                            setOdometer(0)
+                            setOdometerMin(0)
+                        }
+                        
                     }
                     
                 } catch (error) {
