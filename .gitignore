@@ -63,3 +63,4 @@ buck-out/
 
 # android
 *.hprof
+/android
